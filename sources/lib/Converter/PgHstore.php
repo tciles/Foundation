@@ -30,17 +30,17 @@ class PgHstore extends ArrayTypeConverter
      */
     public function fromPg($data, $type, Session $session)
     {
-        if (trim($data) === '') {
+        if (null === $data || trim($data) === '') {
             return null;
         }
 
         $data = '{' . str_replace('"=>"', '":"', $data) . '}';
         $return = json_decode($data, true);
 
-        if ($return === false) {
+        if ($return === false || !is_array($return)) {
             throw new ConverterException(
                 sprintf(
-                    "Could not convert Hstore to PHP array, driver said '%s'.\n%s",
+                    "Could not parse hstore string, driver said '%s'.\n%s",
                     json_last_error(),
                     $data
                 )
